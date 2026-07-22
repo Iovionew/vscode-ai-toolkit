@@ -1,5 +1,28 @@
 # What's New in Foundry Toolkit for VS Code
 
+## Version 1.6.5 - 22 July, 2026
+
+This release brings Tool Catalog access and model actions into their resource pages, improves Hosted Agent deployment guidance and permission handling, and polishes catalog and playground experiences.
+
+### Added
+
+- **Tools page**: Open the Tool Catalog directly from the new **Catalog** tab.
+- **Models page**: Model actions are now available from each row:
+  - **Foundry** models: View code, copy the API key or endpoint, edit, or delete a deployment.
+  - **Others** models: Load a model in Agent Builder, copy its name, edit its API key, delete it, or view its model card when available.
+
+### Changed
+
+- **Hosted Agent Deploy**: Remote package mode is now recommended. If a bundled code deployment fails, you can reopen the deployment form with remote package mode selected.
+- **GitHub Copilot Chat**: Foundry Local models are no longer offered as language model providers.
+
+### Fixed
+
+- **Hosted Agent Deploy**: Deployments no longer attempt unnecessary access setup when your existing Foundry permissions already allow deployment.
+- **Hosted Agent Playground**: OAuth consent requests no longer leave an empty agent response above the consent card.
+- **Model Catalog**: Restored missing logos for Gemma, Kimi, Ministral, and Nemotron models.
+- **Tools page**: The webview tab now displays the Tools icon consistently.
+
 ## Version 1.6.4 - 15 July, 2026
 
 This release introduces **Agent Optimization (preview)** and streamlines Foundry project navigation by flattening resources into **My Resources** and consolidating model deployments, connected-provider models, and the Model Catalog into one tabbed **Models** page. It also refreshes the Model Catalog and improves Hosted Agent creation and playground reliability.
