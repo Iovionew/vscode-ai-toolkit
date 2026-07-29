@@ -1,5 +1,19 @@
 # What's New in Foundry Toolkit for VS Code
 
+## Version 1.6.6 - 29 July, 2026
+
+This release streamlines Hosted Agent creation and model deployment, gives Agent Inspector a complete Responses event view, and improves Hosted Agent Playground reliability.
+
+### Changed
+
+- **Hosted Agent Create**: The sample gallery now uses a responsive two-column layout with filters on the right, starts with the Agent Framework Hello World sample selected, and lets you continue directly from the selected card.
+- **Model deployment**: Search the model list, keep Model Catalog selections prefilled, and get inline validation before deployment while capacity details stay aligned with your latest selection.
+- **Agent Inspector**: The Details **Events** tab now shows every parsed Responses event, including function calls and results, while **Tools** continues to provide a summarized view.
+
+### Fixed
+
+- **Hosted Agent Playground**: Log streaming now starts when you open the **Logs** tab instead of when the playground loads, avoiding requests before the log stream is ready.
+
 ## Version 1.6.5 - 22 July, 2026
 
 This release brings Tool Catalog access and model actions into their resource pages, improves Hosted Agent deployment guidance and permission handling, and polishes catalog and playground experiences.
