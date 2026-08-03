@@ -23,8 +23,8 @@ npx http-server dist -p 8099 -c-1
   with a version sidebar.
 - `assets/styles.css` and `assets/app.js` are copied verbatim into `dist`. The script adds
   filtering (press `/` to focus), scroll-spy nav highlighting, and a light/dark toggle.
-- `### Added` / `Changed` / `Fixed` / `Removed` / `Deprecated` / `Security` headings inside a
-  release become summary chips; other headings render normally.
+- `###` headings inside a release become linkable document sections and populate the latest
+  release's **In this update** outline.
 - A `.nojekyll` marker is emitted so Pages serves the output as-is.
 
 ## One-time repository setup

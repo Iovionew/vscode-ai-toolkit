@@ -115,6 +115,16 @@ function toRelease({ heading, body }) {
   const dateText = versionMatch && versionMatch[2] ? versionMatch[2].trim() : '';
   const date = dateText ? parseReleaseDate(dateText) : null;
   const markdown = body.join('\n').trim();
+  const sections = Array.from(markdown.matchAll(/^###\s+(.+?)\s*$/gm), (match) => ({
+    title: match[1],
+    id: `v-${slugify(version)}-${slugify(match[1])}`,
+  }));
+  let sectionIndex = 0;
+  const html = marked.parse(markdown).replace(/<h3>([\s\S]*?)<\/h3>/g, (headingHtml) => {
+    const section = sections[sectionIndex];
+    sectionIndex += 1;
+    return section ? `<h3 id="${section.id}">${headingHtml.slice(4, -5)}</h3>` : headingHtml;
+  });
 
   return {
     id: `v-${slugify(version)}`,
@@ -123,28 +133,30 @@ function toRelease({ heading, body }) {
     date,
     year: date ? String(date.getUTCFullYear()) : '',
     markdown,
-    html: marked.parse(markdown),
+    sections,
+    html,
   };
 }
 
 function renderRelease(release, isLatest) {
   const latestBadge = isLatest ? '<span class="badge">Latest</span>' : '';
+  const headingTag = isLatest ? 'h1' : 'h2';
   const date = release.dateText
-    ? `<time class="release__date"${
+    ? `<p class="release__meta"><em>Release date: <time${
         release.date ? ` datetime="${release.date.toISOString().slice(0, 10)}"` : ''
-      }>${escapeHtml(release.dateText)}</time>`
+      }>${escapeHtml(release.dateText)}</time></em></p>`
     : '';
 
   return `
         <article class="release" id="${release.id}" data-version="${escapeHtml(release.version)}">
           <header class="release__header">
-            <h2 class="release__title">
+            <${headingTag} class="release__title">
               <a class="release__anchor" href="#${release.id}" aria-label="Link to version ${escapeHtml(
                 release.version,
               )}">#</a>
-              Version ${escapeHtml(release.version)}
+              Foundry Toolkit ${escapeHtml(release.version)}
               ${latestBadge}
-            </h2>
+            </${headingTag}>
             ${date}
           </header>
           <div class="release__body">
@@ -187,10 +199,48 @@ ${group.releases
     .join('\n');
 }
 
+function renderReleaseSelect(releases) {
+  return releases
+    .map(
+      (release, index) =>
+        `<option value="#${release.id}"${index === 0 ? ' selected' : ''}>${escapeHtml(
+          release.version,
+        )}${release.dateText ? ` · ${escapeHtml(release.dateText)}` : ''}</option>`,
+    )
+    .join('\n');
+}
+
+function renderOnThisPage(release) {
+  if (!release || release.sections.length === 0) {
+    return '';
+  }
+
+  return `
+        <aside class="on-this-page" aria-label="In this update">
+          <h2>In this update</h2>
+          <ul>
+${release.sections
+  .map(
+    (section) =>
+      `            <li><a href="#${section.id}">${escapeHtml(section.title)}</a></li>`,
+  )
+  .join('\n')}
+          </ul>
+        </aside>`;
+}
+
 function renderPage({ intro, releases }) {
   const introHtml = intro ? marked.parse(intro) : '';
+  const latest = releases[0];
 
   return `<!DOCTYPE html>
+<!--
+THESIS: Release notes should feel native to the editor ecosystem, not like a stack of product cards.
+OWN-WORLD: VS Code's restrained blue, workhorse system type, hairline dividers, and document-first controls.
+STORY: Pick a version, scan its date and summary, then move through Added, Changed, and Fixed details.
+FIRST VIEWPORT: A compact product bar and release banner sit above sticky update navigation, a broad article, and a latest-release outline.
+FORM: A faithful release-document layout, chosen directly from the user's VS Code 1.131 reference.
+-->
 <html lang="en" data-theme="auto">
   <head>
     <meta charset="utf-8" />
@@ -205,39 +255,63 @@ function renderPage({ intro, releases }) {
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
-    <header class="masthead">
-      <div class="masthead__inner">
-        <div class="masthead__brand">
-          <p class="masthead__eyebrow">${escapeHtml(SITE_TITLE)}</p>
-          <h1 class="masthead__title">Changelog</h1>
-        </div>
-        <div class="masthead__actions">
-          <a class="button button--primary" href="${MARKETPLACE_URL}">Get the extension</a>
-          <a class="button" href="${REPO_URL}">GitHub repo</a>
-          <button class="button button--icon" type="button" id="theme-toggle" aria-label="Toggle color theme">
-            <span aria-hidden="true" data-theme-icon>◐</span>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="brand" href="#${latest.id}" aria-label="${escapeHtml(SITE_TITLE)} changelog">
+          <span>Foundry Toolkit</span>
+        </a>
+        <nav class="primary-nav" aria-label="Primary navigation">
+          <a class="primary-nav__link primary-nav__link--active" href="#${latest.id}">Changelog</a>
+          <a class="primary-nav__link" href="${REPO_URL}">GitHub</a>
+        </nav>
+        <div class="site-header__actions">
+          <label class="header-search" for="search">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m11.2 10.5 3 3-.7.7-3-3a5 5 0 1 1 .7-.7ZM7.3 11.6a4.3 4.3 0 1 0 0-8.6 4.3 4.3 0 0 0 0 8.6Z" />
+            </svg>
+            <span class="visually-hidden">Filter releases</span>
+            <input
+              id="search"
+              type="search"
+              placeholder="Search releases"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <kbd>/</kbd>
+          </label>
+          <button class="theme-switch" type="button" id="theme-toggle" aria-label="Toggle color theme">
+            <svg class="theme-switch__sun" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 3.4A4.6 4.6 0 1 0 8 12.6 4.6 4.6 0 0 0 8 3.4Zm0 1A3.6 3.6 0 1 1 8 11.6 3.6 3.6 0 0 1 8 4.4ZM7.5 0h1v2h-1V0Zm0 14h1v2h-1v-2ZM0 7.5h2v1H0v-1Zm14 0h2v1h-2v-1ZM2 2.7l.7-.7 1.4 1.4-.7.7L2 2.7Zm9.9 9.9.7-.7 1.4 1.4-.7.7-1.4-1.4ZM2 13.3l1.4-1.4.7.7L2.7 14l-.7-.7ZM11.9 3.4 13.3 2l.7.7-1.4 1.4-.7-.7Z" />
+            </svg>
+            <svg class="theme-switch__moon" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M6.2 1.1a6.8 6.8 0 1 0 8.7 8.7A5.7 5.7 0 0 1 6.2 1.1Zm-1 1.6A6.7 6.7 0 0 0 13.3 11 5.8 5.8 0 1 1 5.2 2.7Z" />
+            </svg>
           </button>
+          <a class="download-button" href="${MARKETPLACE_URL}">Get the extension</a>
         </div>
       </div>
     </header>
 
+    <div class="release-banner">
+      <a href="#${latest.id}">Foundry Toolkit ${escapeHtml(latest.version)} is now available</a>
+    </div>
+
     <div class="layout">
-      <nav class="sidebar" aria-label="Releases">
-        <label class="search" for="search">
-          <span class="visually-hidden">Filter releases</span>
-          <input
-            id="search"
-            type="search"
-            placeholder="Filter releases…"
-            autocomplete="off"
-            spellcheck="false"
-          />
+      <aside class="sidebar">
+        <label class="release-picker" for="release-select">
+          <span>Updates</span>
+          <select id="release-select" aria-label="Choose a release">
+${renderReleaseSelect(releases)}
+          </select>
         </label>
-        <p class="sidebar__empty" id="nav-empty" hidden>No matching releases.</p>
-        <div class="nav" id="nav">
+        <nav class="release-nav" aria-label="Updates">
+          <h2>Updates</h2>
+          <div class="nav" id="nav">
 ${renderNav(releases)}
-        </div>
-      </nav>
+          </div>
+        </nav>
+        <p class="sidebar__empty" id="nav-empty" hidden>No matching releases.</p>
+      </aside>
 
       <main class="content" id="content">
         ${introHtml ? `<section class="intro">${introHtml}</section>` : ''}
@@ -247,14 +321,17 @@ ${releases.map((release, index) => renderRelease(release, index === 0)).join('\n
           No releases match your filter.
         </p>
       </main>
+${renderOnThisPage(latest)}
     </div>
 
     <footer class="footer">
-      <p>
-        Generated from
-        <a href="${REPO_URL}/blob/main/WHATS_NEW.md">WHATS_NEW.md</a>.
-        © Microsoft Corporation.
-      </p>
+      <div class="footer__inner">
+        <p>© Microsoft Corporation.</p>
+        <p>
+          Release notes are generated from
+          <a href="${REPO_URL}/blob/main/WHATS_NEW.md">WHATS_NEW.md</a>.
+        </p>
+      </div>
     </footer>
 
     <script src="./app.js"></script>

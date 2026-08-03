@@ -4,21 +4,21 @@
   var THEME_KEY = 'foundry-toolkit-changelog-theme';
   var root = document.documentElement;
   var toggle = document.getElementById('theme-toggle');
-  var icon = toggle ? toggle.querySelector('[data-theme-icon]') : null;
   var search = document.getElementById('search');
   var results = document.getElementById('results');
   var navEmpty = document.getElementById('nav-empty');
   var contentEmpty = document.getElementById('content-empty');
+  var releaseSelect = document.getElementById('release-select');
   var releases = Array.prototype.slice.call(document.querySelectorAll('.release'));
   var navItems = Array.prototype.slice.call(document.querySelectorAll('.nav__item'));
+  var releaseOptions = releaseSelect
+    ? Array.prototype.slice.call(releaseSelect.querySelectorAll('option'))
+    : [];
 
   // Theme
 
   function applyTheme(theme) {
     root.setAttribute('data-theme', theme);
-    if (icon) {
-      icon.textContent = theme === 'dark' ? '☀' : '☾';
-    }
     if (toggle) {
       toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
     }
@@ -76,6 +76,10 @@
       item.hidden = !matchedIds[item.getAttribute('data-target')];
     });
 
+    releaseOptions.forEach(function (option) {
+      option.hidden = !matchedIds[option.value.slice(1)];
+    });
+
     document.querySelectorAll('.nav__group').forEach(function (group) {
       var visible = group.querySelectorAll('.nav__item:not([hidden])').length;
       group.hidden = visible === 0;
@@ -105,6 +109,12 @@
     }
   }
 
+  if (releaseSelect) {
+    releaseSelect.addEventListener('change', function () {
+      window.location.hash = releaseSelect.value;
+    });
+  }
+
   document.addEventListener('keydown', function (event) {
     if (event.key === '/' && search && document.activeElement !== search) {
       event.preventDefault();
@@ -118,6 +128,9 @@
     navItems.forEach(function (item) {
       item.classList.toggle('is-active', item.getAttribute('data-target') === id);
     });
+    if (releaseSelect && releaseSelect.value !== '#' + id) {
+      releaseSelect.value = '#' + id;
+    }
   }
 
   if ('IntersectionObserver' in window && releases.length > 0) {
