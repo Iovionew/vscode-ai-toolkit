@@ -2,7 +2,11 @@
 
 ## Version 1.6.6 - 29 July, 2026
 
-This release streamlines Hosted Agent creation and model deployment, gives Agent Inspector a complete Responses event view, and improves Hosted Agent Playground reliability.
+This release streamlines Hosted Agent creation and model deployment, adds Microsoft Teams support for Activity Protocol agents, gives Agent Inspector a complete Responses event view, and improves deployment and playground reliability.
+
+### Added
+
+- **Activity Protocol agents**: Deploy Hosted Agents to Microsoft Teams with the required Foundry endpoint configuration, Azure Bot and Teams channel setup, and a generated Teams app setup guide.
 
 ### Changed
 
@@ -12,7 +16,9 @@ This release streamlines Hosted Agent creation and model deployment, gives Agent
 
 ### Fixed
 
+- **Hosted Agent Deploy**: Invalid environment variable names are now reported before a container build starts, with guidance to correct the agent configuration.
 - **Hosted Agent Playground**: Log streaming now starts when you open the **Logs** tab instead of when the playground loads, avoiding requests before the log stream is ready.
+- **Agent Inspector**: MCP approval and OAuth consent cards now appear once whether the request arrives when an output item starts or completes.
 
 ## Version 1.6.5 - 22 July, 2026
 
