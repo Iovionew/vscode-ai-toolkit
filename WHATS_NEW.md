@@ -1,5 +1,30 @@
 # What's New in Foundry Toolkit for VS Code
 
+## Version 1.6.7 - 5 August, 2026
+
+This release makes Models and Tools faster, improves Agent Inspector conversations and events, adds local Activity Protocol debugging with Microsoft 365 Agents Playground, and removes retired GitHub Models support.
+
+### Added
+
+- **Activity Protocol agents**: Newly scaffolded Python projects now use Microsoft 365 Agents Playground for local debugging.
+- **Agent Inspector**
+  - **Input history**: Press **Up** and **Down** to recall, edit, and resend earlier requests while preserving your unsent draft.
+  - **Clear Chat**: Start a fresh Responses or Invocations conversation while clearing the chat, Events, and Details state.
+
+### Changed
+
+- **Resource browsing**
+  - Models and Tools open faster by loading the selected tab first and showing core rows before additional details.
+  - Returning to Agents, Models, Tools, Knowledge, or Evaluations preserves rows, search, filters, and pagination while refreshing the active view in the background. A manual refresh always retrieves the latest service state.
+  - Collapsed **My Resources** sections load only when opened, reducing startup work while preserving Search and Recent Agents.
+- **GitHub Models**: Following the service's retirement, GitHub Models has been removed from the Model Catalog, playground, model comparison, Prompt Builder, and evaluations.
+- **Agent Inspector Events**: Responses and Invocations now use a consistent newest-first Events list, with clearer error indicators and accessible controls.
+
+### Fixed
+
+- **Activity Protocol deployment**: Azure Bot application ID conflicts now show actionable guidance instead of a raw service error.
+- **Agent Optimization (preview)**: New optimization runs are disabled for hosted agents that do not use the Responses protocol, with guidance explaining the requirement.
+
 ## Version 1.6.6 - 29 July, 2026
 
 This release streamlines Hosted Agent creation and model deployment, adds Microsoft Teams support for Activity Protocol agents, gives Agent Inspector a complete Responses event view, and improves deployment and playground reliability.
