@@ -1,5 +1,27 @@
 # What's New in Foundry Toolkit for VS Code
 
+## Version 1.6.8 - 12 August, 2026
+
+This release adds user-scoped Hosted Agent Playground sessions, makes Hosted Agent setup and Activity Protocol deployment more reliable, and improves resource loading, Agent Inspector continuations, Prompt Builder persistence, and MCP authorization.
+
+### Added
+
+- **Hosted Agent Playground**: Set a user identity for Responses conversations so conversation state and session files stay isolated for each user.
+
+### Changed
+
+- **Hosted Agent Create**
+  - Choose **Skip for now** during model setup, even when existing model deployments cannot be loaded.
+  - Selected sample cards have clearer contrast across VS Code themes.
+- **Resource lists**: Evaluations, Routines, Tools, Skills, and Toolboxes now show consistent loading feedback. Direct links to Tools or Skills open the requested tab without first loading Toolboxes.
+
+### Fixed
+
+- **Activity Protocol deployment**: Azure Bot settings are now validated before submission, existing compatible Bots are reused, and identity conflicts offer recovery choices. The wizard remains available while Bot details load, and successful deployments no longer open an unsupported Agent Playground.
+- **Agent Inspector**: Tool approvals and OAuth consent requests remain available across continuation responses until every request is resolved.
+- **Agent Builder**: Reopening and saving Foundry prompt agents now preserves the selected agent version and tool configuration.
+- **MCP OAuth**: Authorization callbacks now complete only the matching connection request.
+
 ## Version 1.6.7 - 5 August, 2026
 
 This release makes Models and Tools faster, improves Agent Inspector conversations and events, adds local Activity Protocol debugging with Microsoft 365 Agents Playground, and removes retired GitHub Models support.
